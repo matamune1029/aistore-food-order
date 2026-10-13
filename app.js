@@ -574,7 +574,7 @@ async function submitOrder() {
     let orderId = generateOrderCode();
     let rpcResult = null;
     for (let attempt = 0; attempt < 3; attempt++) {
-      const { data: rpcData, error: rpcError } = await supabaseClient.rpc('place_order', {
+      const { data: rpcData, error: rpcError } = await supabaseClient.rpc('place_order_aistore', {
         p_customer_name: name,
         p_contact: fullContactInfo,
         p_items: cartPayload,
