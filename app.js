@@ -312,7 +312,7 @@ function normalizeCategory(rawCat, nameZh = '', nameFr = '') {
 
 async function fetchMenu() {
   try {
-    const { data, error } = await supabaseClient.from('menu_items').select('*');
+    const { data, error } = await supabaseClient.from('aistore_menu_items').select('*');
     if (error) console.error('Menu Fetch Error:', error);
     menuData = data || [];
     renderCategoryBar();
@@ -549,7 +549,7 @@ async function submitOrder() {
 
     try {
       const { data: latestSetting } = await supabaseClient
-        .from('store_settings')
+        .from('aistore_store_settings')
         .select('whatsapp_number, store_name')
         .eq('id', 1)
         .single();
@@ -921,7 +921,7 @@ async function fetchOrders() {
 
   try {
     const { data, error } = await supabaseClient
-      .from('orders')
+      .from('aistore_orders')
       .select('*')
       .order('created_at', { ascending: false });
 
@@ -960,7 +960,7 @@ function filterOrderTab(tabKey) {
 
 async function updateOrderStatus(orderId, newStatus) {
   const { error } = await supabaseClient
-    .from('orders')
+    .from('aistore_orders')
     .update({ status: newStatus })
     .eq('id', orderId);
 
@@ -1115,7 +1115,7 @@ async function fetchAdminMenu() {
   if (!container) return;
 
   if (!menuData || menuData.length === 0) {
-    const { data } = await supabaseClient.from('menu_items').select('*');
+    const { data } = await supabaseClient.from('aistore_menu_items').select('*');
     if (data) menuData = data;
   }
 
@@ -1203,7 +1203,7 @@ async function fetchAdminMenu() {
 async function toggleDishAvailability(event, id, newStatus) {
   if (event) event.stopPropagation();
   
-  const { error } = await supabaseClient.from('menu_items').update({ is_available: newStatus }).eq('id', id);
+  const { error } = await supabaseClient.from('aistore_menu_items').update({ is_available: newStatus }).eq('id', id);
   if (error) {
     alert('修改狀態失敗: ' + error.message);
   } else {
@@ -1329,9 +1329,9 @@ async function saveDish() {
 
   let res;
   if (id) {
-    res = await supabaseClient.from('menu_items').update(payload).eq('id', id);
+    res = await supabaseClient.from('aistore_menu_items').update(payload).eq('id', id);
   } else {
-    res = await supabaseClient.from('menu_items').insert([payload]);
+    res = await supabaseClient.from('aistore_menu_items').insert([payload]);
   }
 
   if (res.error) {
@@ -1351,7 +1351,7 @@ async function deleteDish(event, id) {
   const confirmDelete = confirm(`⚠️ Êtes-vous sûr de vouloir supprimer "${nameZh}" ?\n確定要永久刪除菜品「${nameZh}」嗎？刪除後無法恢復！`);
   if (!confirmDelete) return;
 
-  const { error } = await supabaseClient.from('menu_items').delete().eq('id', id);
+  const { error } = await supabaseClient.from('aistore_menu_items').delete().eq('id', id);
 
   if (error) {
     alert('❌ 刪除失敗: ' + error.message);
@@ -1428,7 +1428,7 @@ async function deleteOrderFromSupabase(orderId) {
 
   try {
     const { data, error } = await supabaseClient
-      .from('orders')
+      .from('aistore_orders')
       .delete()
       .eq('id', orderId)
       .select();
@@ -1517,7 +1517,7 @@ async function markWhatsappClicked(orderId) {
 async function loadStoreSettings() {
   try {
     const { data, error } = await supabaseClient
-      .from('store_settings')
+      .from('aistore_store_settings')
       .select('whatsapp_number, store_name, store_slogan, store_hours_text, business_mode, manual_open, allowed_days')
       .eq('id', 1)
       .single();
@@ -1593,7 +1593,7 @@ async function saveWhatsAppNumber() {
 
   try {
     const { error } = await supabaseClient
-      .from('store_settings')
+      .from('aistore_store_settings')
       .update({ whatsapp_number: newNumber, updated_at: new Date() })
       .eq('id', 1);
 
@@ -1627,7 +1627,7 @@ async function saveStoreInfo() {
 
   try {
     const { error } = await supabaseClient
-      .from('store_settings')
+      .from('aistore_store_settings')
       .update({ 
         store_name: newName, 
         store_slogan: newSlogan, 
@@ -1689,7 +1689,7 @@ async function saveBusinessHoursInfo() {
 
   try {
     const { error } = await supabaseClient
-      .from('store_settings')
+      .from('aistore_store_settings')
       .update({ 
         store_hours_text: newHoursText, 
         business_mode: newMode, 
