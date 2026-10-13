@@ -549,7 +549,7 @@ async function submitOrder() {
 
     try {
       const { data: latestSetting } = await supabaseClient
-        .from('aistore_store_settings')
+        .from('aistore_settings')
         .select('whatsapp_number, store_name')
         .eq('id', 1)
         .single();
@@ -1517,7 +1517,7 @@ async function markWhatsappClicked(orderId) {
 async function loadStoreSettings() {
   try {
     const { data, error } = await supabaseClient
-      .from('aistore_store_settings')
+      .from('aistore_settings')
       .select('whatsapp_number, store_name, store_slogan, store_hours_text, business_mode, manual_open, allowed_days')
       .eq('id', 1)
       .single();
@@ -1593,7 +1593,7 @@ async function saveWhatsAppNumber() {
 
   try {
     const { error } = await supabaseClient
-      .from('aistore_store_settings')
+      .from('aistore_settings')
       .update({ whatsapp_number: newNumber, updated_at: new Date() })
       .eq('id', 1);
 
@@ -1627,7 +1627,7 @@ async function saveStoreInfo() {
 
   try {
     const { error } = await supabaseClient
-      .from('aistore_store_settings')
+      .from('aistore_settings')
       .update({ 
         store_name: newName, 
         store_slogan: newSlogan, 
@@ -1689,7 +1689,7 @@ async function saveBusinessHoursInfo() {
 
   try {
     const { error } = await supabaseClient
-      .from('aistore_store_settings')
+      .from('aistore_settings')
       .update({ 
         store_hours_text: newHoursText, 
         business_mode: newMode, 
