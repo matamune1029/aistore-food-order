@@ -480,9 +480,9 @@ function saveOrderToLocal(order) {
   }
 }
 
-// 🔒 place_order 失敗時的提示（錯誤代碼由資料庫函式回傳）
+// 🔒 place_order_aistore 失敗時的提示（錯誤代碼由資料庫函式回傳）
 function handlePlaceOrderError(msg) {
-  console.error('place_order error:', msg);
+  console.error('place_order_aistore error:', msg);
   let text;
   if (msg.includes('OUT_OF_STOCK:')) {
     const dish = msg.split('OUT_OF_STOCK:')[1].split('\n')[0].trim();
@@ -562,7 +562,7 @@ async function submitOrder() {
       console.warn("即時同步後台設定失敗，使用現有設定", e);
     }
 
-    // 🔒 價格、庫存、訂單寫入全部交給資料庫函式 place_order：
+    // 🔒 價格、庫存、訂單寫入全部交給資料庫函式 place_order_aistore：
     //    顧客端只送「菜品 id + 數量」，價格與庫存由資料庫判斷，前端無法竄改。
     const cartPayload = Object.keys(cart).map(id => ({ id: String(id), qty: cart[id] }));
     const deliverySlot = `${dateSelect} - ${timeSelect}`;
@@ -857,7 +857,7 @@ function initAdminRealtimeListener() {
     .channel('admin-orders-channel')
     .on(
       'postgres_changes',
-      { event: 'INSERT', schema: 'public', table: 'orders' },
+      { event: 'INSERT', schema: 'public', table: 'aistore_orders' },
       (payload) => {
         playAdminNewOrderSound();
         fetchOrders();
@@ -865,7 +865,7 @@ function initAdminRealtimeListener() {
     )
     .on(
       'postgres_changes',
-      { event: 'UPDATE', schema: 'public', table: 'orders' },
+      { event: 'UPDATE', schema: 'public', table: 'aistore_orders' },
       (payload) => {
         fetchOrders();
       }
