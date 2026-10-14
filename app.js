@@ -1683,7 +1683,7 @@ async function saveBusinessHoursInfo() {
 
   if (!hoursInput || !modeSelect || !manualSelect) return;
 
-  const newHoursText = hoursInput.value.trim() || "🕒 13:00 - 10:00 (Lundi - Dimanche)";
+  const newHoursText = hoursInput.value.trim() || "🕒 13:00 - 10:00 ";
   const newMode = modeSelect.value;
   const newManualOpen = manualSelect.value === 'true';
 
