@@ -1535,6 +1535,12 @@ async function loadStoreSettings() {
         if (nameInput) nameInput.value = STORE_CONFIG.storeName;
         const titleEl = document.getElementById('store-title-text');
         if (titleEl) titleEl.innerText = STORE_CONFIG.storeName;
+
+        // 🌟 【新增這裡】自動動態更新瀏覽器分頁的 Title
+        const pageTitleEl = document.getElementById('page-title');
+        if (pageTitleEl) {
+          pageTitleEl.innerText = `${STORE_CONFIG.storeName} - Commande en ligne`;
+        }
       }
 
       if (data.store_slogan) {
