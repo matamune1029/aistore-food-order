@@ -707,7 +707,7 @@ function copyReceiptText() {
   if (!lastOrderDetails) return;
   const o = lastOrderDetails;
   const itemText = o.items.map(i => `- ${i.name_fr} (${i.name_zh}) x${i.qty}`).join('\n');
-  const text = `🧾 【Cici Cuisine 訂單憑證 #${o.orderId}】\n📅 配送時間: ${o.deliverySlot}\n👤 姓名: ${o.name}\n📞 電話: ${o.phone}\n📍 地址: ${o.address}\n\n🍲 訂購餐點:\n${itemText}\n\n💰 總計: ${o.total.toFixed(2)} €`;
+  const text = `🧾 【${STORE_CONFIG.storeName} 訂單憑證 #${o.orderId}】\n📅 配送時間: ${o.deliverySlot}\n👤 姓名: ${o.name}\n📞 電話: ${o.phone}\n📍 地址: ${o.address}\n\n🍲 訂購餐點:\n${itemText}\n\n💰 總計: ${o.total.toFixed(2)} €`;
 
   navigator.clipboard.writeText(text).then(() => {
     alert('📋 訂單明細已複製到剪貼板！可以直接發給群主微信。');
@@ -1630,7 +1630,7 @@ async function saveStoreInfo() {
 
   if (!nameInput || !sloganInput) return;
 
-  const newName = nameInput.value.trim() || "Cici Cuisine";
+  const newName = nameInput.value.trim() || STORE_CONFIG.storeName;
   const newSlogan = sloganInput.value.trim() || "🕒 Livraison | 配送";
 
   try {
