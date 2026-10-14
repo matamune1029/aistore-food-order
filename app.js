@@ -1505,10 +1505,10 @@ function showWhatsAppModal(whatsappUrl, dbId, orderCode) {
 
 async function markWhatsappClicked(orderId) {
   playWhatsappClickSound();
-
   if (!orderId) return;
   try {
-    await supabaseClient.rpc('mark_whatsapp_sent', { p_id: String(orderId) });
+    // 動態讀取 config.js 裡定義的函數名稱！
+    await supabaseClient.rpc(DB_CONFIG.markWhatsappRpc, { p_id: String(orderId) });
   } catch (e) {
     console.error('更新 WhatsApp 點擊狀態失敗:', e);
   }
