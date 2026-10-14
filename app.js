@@ -312,7 +312,7 @@ function normalizeCategory(rawCat, nameZh = '', nameFr = '') {
 
 async function fetchMenu() {
   try {
-    const { data, error } = await supabaseClient.from('aistore_menu_items').select('*');
+    const { data, error } = await supabaseClient.from('DB_CONFIG.menuItemsTable').select('*');
     if (error) console.error('Menu Fetch Error:', error);
     menuData = data || [];
     renderCategoryBar();
@@ -480,9 +480,9 @@ function saveOrderToLocal(order) {
   }
 }
 
-// 🔒 place_order_aistore 失敗時的提示（錯誤代碼由資料庫函式回傳）
+// 🔒 DB_CONFIG.placeOrderRpc 失敗時的提示（錯誤代碼由資料庫函式回傳）
 function handlePlaceOrderError(msg) {
-  console.error('place_order_aistore error:', msg);
+  console.error('DB_CONFIG.placeOrderRpc error:', msg);
   let text;
   if (msg.includes('OUT_OF_STOCK:')) {
     const dish = msg.split('OUT_OF_STOCK:')[1].split('\n')[0].trim();
@@ -549,7 +549,7 @@ async function submitOrder() {
 
     try {
       const { data: latestSetting } = await supabaseClient
-        .from('aistore_settings')
+        .from('DB_CONFIG.settingsTable')
         .select('whatsapp_number, store_name')
         .eq('id', 1)
         .single();
@@ -562,7 +562,7 @@ async function submitOrder() {
       console.warn("即時同步後台設定失敗，使用現有設定", e);
     }
 
-    // 🔒 價格、庫存、訂單寫入全部交給資料庫函式 place_order_aistore：
+    // 🔒 價格、庫存、訂單寫入全部交給資料庫函式 DB_CONFIG.placeOrderRpc：
     //    顧客端只送「菜品 id + 數量」，價格與庫存由資料庫判斷，前端無法竄改。
     const cartPayload = Object.keys(cart).map(id => ({ id: String(id), qty: cart[id] }));
     const deliverySlot = `${dateSelect} - ${timeSelect}`;
@@ -574,7 +574,7 @@ async function submitOrder() {
     let orderId = generateOrderCode();
     let rpcResult = null;
     for (let attempt = 0; attempt < 3; attempt++) {
-      const { data: rpcData, error: rpcError } = await supabaseClient.rpc('place_order_aistore', {
+      const { data: rpcData, error: rpcError } = await supabaseClient.rpc('DB_CONFIG.placeOrderRpc', {
         p_customer_name: name,
         p_contact: fullContactInfo,
         p_items: cartPayload,
@@ -857,7 +857,7 @@ function initAdminRealtimeListener() {
     .channel('admin-orders-channel')
     .on(
       'postgres_changes',
-      { event: 'INSERT', schema: 'public', table: 'aistore_orders' },
+      { event: 'INSERT', schema: 'public', table: 'DB_CONFIG.ordersTable' },
       (payload) => {
         playAdminNewOrderSound();
         fetchOrders();
@@ -865,7 +865,7 @@ function initAdminRealtimeListener() {
     )
     .on(
       'postgres_changes',
-      { event: 'UPDATE', schema: 'public', table: 'aistore_orders' },
+      { event: 'UPDATE', schema: 'public', table: 'DB_CONFIG.ordersTable' },
       (payload) => {
         fetchOrders();
       }
@@ -921,7 +921,7 @@ async function fetchOrders() {
 
   try {
     const { data, error } = await supabaseClient
-      .from('aistore_orders')
+      .from('DB_CONFIG.ordersTable')
       .select('*')
       .order('created_at', { ascending: false });
 
@@ -960,7 +960,7 @@ function filterOrderTab(tabKey) {
 
 async function updateOrderStatus(orderId, newStatus) {
   const { error } = await supabaseClient
-    .from('aistore_orders')
+    .from('DB_CONFIG.ordersTable')
     .update({ status: newStatus })
     .eq('id', orderId);
 
@@ -1115,7 +1115,7 @@ async function fetchAdminMenu() {
   if (!container) return;
 
   if (!menuData || menuData.length === 0) {
-    const { data } = await supabaseClient.from('aistore_menu_items').select('*');
+    const { data } = await supabaseClient.from('DB_CONFIG.menuItemsTable').select('*');
     if (data) menuData = data;
   }
 
@@ -1203,7 +1203,7 @@ async function fetchAdminMenu() {
 async function toggleDishAvailability(event, id, newStatus) {
   if (event) event.stopPropagation();
   
-  const { error } = await supabaseClient.from('aistore_menu_items').update({ is_available: newStatus }).eq('id', id);
+  const { error } = await supabaseClient.from('DB_CONFIG.menuItemsTable').update({ is_available: newStatus }).eq('id', id);
   if (error) {
     alert('修改狀態失敗: ' + error.message);
   } else {
@@ -1329,9 +1329,9 @@ async function saveDish() {
 
   let res;
   if (id) {
-    res = await supabaseClient.from('aistore_menu_items').update(payload).eq('id', id);
+    res = await supabaseClient.from('DB_CONFIG.menuItemsTable').update(payload).eq('id', id);
   } else {
-    res = await supabaseClient.from('aistore_menu_items').insert([payload]);
+    res = await supabaseClient.from('DB_CONFIG.menuItemsTable').insert([payload]);
   }
 
   if (res.error) {
@@ -1351,7 +1351,7 @@ async function deleteDish(event, id) {
   const confirmDelete = confirm(`⚠️ Êtes-vous sûr de vouloir supprimer "${nameZh}" ?\n確定要永久刪除菜品「${nameZh}」嗎？刪除後無法恢復！`);
   if (!confirmDelete) return;
 
-  const { error } = await supabaseClient.from('aistore_menu_items').delete().eq('id', id);
+  const { error } = await supabaseClient.from('DB_CONFIG.menuItemsTable').delete().eq('id', id);
 
   if (error) {
     alert('❌ 刪除失敗: ' + error.message);
@@ -1428,7 +1428,7 @@ async function deleteOrderFromSupabase(orderId) {
 
   try {
     const { data, error } = await supabaseClient
-      .from('aistore_orders')
+      .from('DB_CONFIG.ordersTable')
       .delete()
       .eq('id', orderId)
       .select();
@@ -1517,7 +1517,7 @@ async function markWhatsappClicked(orderId) {
 async function loadStoreSettings() {
   try {
     const { data, error } = await supabaseClient
-      .from('aistore_settings')
+      .from('DB_CONFIG.settingsTable')
       .select('whatsapp_number, store_name, store_slogan, store_hours_text, business_mode, manual_open, allowed_days')
       .eq('id', 1)
       .single();
@@ -1593,7 +1593,7 @@ async function saveWhatsAppNumber() {
 
   try {
     const { error } = await supabaseClient
-      .from('aistore_settings')
+      .from('DB_CONFIG.settingsTable')
       .update({ whatsapp_number: newNumber, updated_at: new Date() })
       .eq('id', 1);
 
@@ -1627,7 +1627,7 @@ async function saveStoreInfo() {
 
   try {
     const { error } = await supabaseClient
-      .from('aistore_settings')
+      .from('DB_CONFIG.settingsTable')
       .update({ 
         store_name: newName, 
         store_slogan: newSlogan, 
@@ -1689,7 +1689,7 @@ async function saveBusinessHoursInfo() {
 
   try {
     const { error } = await supabaseClient
-      .from('aistore_settings')
+      .from('DB_CONFIG.settingsTable')
       .update({ 
         store_hours_text: newHoursText, 
         business_mode: newMode, 
