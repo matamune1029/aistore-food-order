@@ -3,7 +3,7 @@ const SUPABASE_KEY = 'sb_publishable_eQG7FVgOU36Z8edfnrf27w_5A7tlNiq';
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let STORE_CONFIG = {
-  whatsappNumber: "33070710711", 
+  whatsappNumber: "85292773583", 
   storeName: "AiStore",
   storeSlogan: " Livraison | Emporter",
   storeHoursText: "🕒 13:00 - 10:00 (Lundi - Dimanche)",
