@@ -6,4 +6,5 @@ const DB_CONFIG = {
   ordersTable: `${STORE_PREFIX}_orders`,
   settingsTable: `${STORE_PREFIX}_settings`,
   placeOrderRpc: `place_order_${STORE_PREFIX}`
+  markWhatsappRpc: `mark_whatsapp_sent_${STORE_PREFIX}`
 };
