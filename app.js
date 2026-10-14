@@ -312,7 +312,7 @@ function normalizeCategory(rawCat, nameZh = '', nameFr = '') {
 
 async function fetchMenu() {
   try {
-    const { data, error } = await supabaseClient.from('DB_CONFIG.menuItemsTable').select('*');
+    const { data, error } = await supabaseClient.from(DB_CONFIG.menuItemsTable).select('*');
     if (error) console.error('Menu Fetch Error:', error);
     menuData = data || [];
     renderCategoryBar();
@@ -549,7 +549,7 @@ async function submitOrder() {
 
     try {
       const { data: latestSetting } = await supabaseClient
-        .from('DB_CONFIG.settingsTable')
+        .from(DB_CONFIG.settingsTable)
         .select('whatsapp_number, store_name')
         .eq('id', 1)
         .single();
@@ -574,7 +574,7 @@ async function submitOrder() {
     let orderId = generateOrderCode();
     let rpcResult = null;
     for (let attempt = 0; attempt < 3; attempt++) {
-      const { data: rpcData, error: rpcError } = await supabaseClient.rpc('DB_CONFIG.placeOrderRpc', {
+      const { data: rpcData, error: rpcError } = await supabaseClient.rpc(DB_CONFIG.placeOrderRpc, {
         p_customer_name: name,
         p_contact: fullContactInfo,
         p_items: cartPayload,
@@ -857,7 +857,7 @@ function initAdminRealtimeListener() {
     .channel('admin-orders-channel')
     .on(
       'postgres_changes',
-      { event: 'INSERT', schema: 'public', table: 'DB_CONFIG.ordersTable' },
+      { event: 'INSERT', schema: 'public', table: DB_CONFIG.ordersTable },
       (payload) => {
         playAdminNewOrderSound();
         fetchOrders();
@@ -865,7 +865,7 @@ function initAdminRealtimeListener() {
     )
     .on(
       'postgres_changes',
-      { event: 'UPDATE', schema: 'public', table: 'DB_CONFIG.ordersTable' },
+      { event: 'UPDATE', schema: 'public', table: DB_CONFIG.ordersTable },
       (payload) => {
         fetchOrders();
       }
@@ -921,7 +921,7 @@ async function fetchOrders() {
 
   try {
     const { data, error } = await supabaseClient
-      .from('DB_CONFIG.ordersTable')
+      .from(DB_CONFIG.ordersTable)
       .select('*')
       .order('created_at', { ascending: false });
 
@@ -960,7 +960,7 @@ function filterOrderTab(tabKey) {
 
 async function updateOrderStatus(orderId, newStatus) {
   const { error } = await supabaseClient
-    .from('DB_CONFIG.ordersTable')
+    .from(DB_CONFIG.ordersTable)
     .update({ status: newStatus })
     .eq('id', orderId);
 
@@ -1115,7 +1115,7 @@ async function fetchAdminMenu() {
   if (!container) return;
 
   if (!menuData || menuData.length === 0) {
-    const { data } = await supabaseClient.from('DB_CONFIG.menuItemsTable').select('*');
+    const { data } = await supabaseClient.from(DB_CONFIG.menuItemsTable).select('*');
     if (data) menuData = data;
   }
 
@@ -1203,7 +1203,7 @@ async function fetchAdminMenu() {
 async function toggleDishAvailability(event, id, newStatus) {
   if (event) event.stopPropagation();
   
-  const { error } = await supabaseClient.from('DB_CONFIG.menuItemsTable').update({ is_available: newStatus }).eq('id', id);
+  const { error } = await supabaseClient.from(DB_CONFIG.menuItemsTable).update({ is_available: newStatus }).eq('id', id);
   if (error) {
     alert('修改狀態失敗: ' + error.message);
   } else {
@@ -1329,9 +1329,9 @@ async function saveDish() {
 
   let res;
   if (id) {
-    res = await supabaseClient.from('DB_CONFIG.menuItemsTable').update(payload).eq('id', id);
+    res = await supabaseClient.from(DB_CONFIG.menuItemsTable).update(payload).eq('id', id);
   } else {
-    res = await supabaseClient.from('DB_CONFIG.menuItemsTable').insert([payload]);
+    res = await supabaseClient.from(DB_CONFIG.menuItemsTable).insert([payload]);
   }
 
   if (res.error) {
@@ -1351,7 +1351,7 @@ async function deleteDish(event, id) {
   const confirmDelete = confirm(`⚠️ Êtes-vous sûr de vouloir supprimer "${nameZh}" ?\n確定要永久刪除菜品「${nameZh}」嗎？刪除後無法恢復！`);
   if (!confirmDelete) return;
 
-  const { error } = await supabaseClient.from('DB_CONFIG.menuItemsTable').delete().eq('id', id);
+  const { error } = await supabaseClient.from(DB_CONFIG.menuItemsTable).delete().eq('id', id);
 
   if (error) {
     alert('❌ 刪除失敗: ' + error.message);
@@ -1428,7 +1428,7 @@ async function deleteOrderFromSupabase(orderId) {
 
   try {
     const { data, error } = await supabaseClient
-      .from('DB_CONFIG.ordersTable')
+      .from(DB_CONFIG.ordersTable)
       .delete()
       .eq('id', orderId)
       .select();
@@ -1517,7 +1517,7 @@ async function markWhatsappClicked(orderId) {
 async function loadStoreSettings() {
   try {
     const { data, error } = await supabaseClient
-      .from('DB_CONFIG.settingsTable')
+      .from(DB_CONFIG.settingsTable)
       .select('whatsapp_number, store_name, store_slogan, store_hours_text, business_mode, manual_open, allowed_days')
       .eq('id', 1)
       .single();
@@ -1593,7 +1593,7 @@ async function saveWhatsAppNumber() {
 
   try {
     const { error } = await supabaseClient
-      .from('DB_CONFIG.settingsTable')
+      .from(DB_CONFIG.settingsTable)
       .update({ whatsapp_number: newNumber, updated_at: new Date() })
       .eq('id', 1);
 
@@ -1627,7 +1627,7 @@ async function saveStoreInfo() {
 
   try {
     const { error } = await supabaseClient
-      .from('DB_CONFIG.settingsTable')
+      .from(DB_CONFIG.settingsTable)
       .update({ 
         store_name: newName, 
         store_slogan: newSlogan, 
@@ -1689,7 +1689,7 @@ async function saveBusinessHoursInfo() {
 
   try {
     const { error } = await supabaseClient
-      .from('DB_CONFIG.settingsTable')
+      .from(DB_CONFIG.settingsTable)
       .update({ 
         store_hours_text: newHoursText, 
         business_mode: newMode, 
