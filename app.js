@@ -1530,12 +1530,18 @@ async function loadStoreSettings() {
       }
 
       if (data.store_name) {
-        STORE_CONFIG.storeName = data.store_name;
-        const nameInput = document.getElementById('setting-store-name-input');
-        if (nameInput) nameInput.value = STORE_CONFIG.storeName;
-        const titleEl = document.getElementById('store-title-text');
-        if (titleEl) titleEl.innerText = STORE_CONFIG.storeName;
-      }
+        STORE_CONFIG.storeName = data.store_name;
+        const nameInput = document.getElementById('setting-store-name-input');
+        if (nameInput) nameInput.value = STORE_CONFIG.storeName;
+        const titleEl = document.getElementById('store-title-text');
+        if (titleEl) titleEl.innerText = STORE_CONFIG.storeName;
+
+        // 🌟 補上這行，讓瀏覽器分頁標題跟著正確變動
+        const pageTitleEl = document.getElementById('page-title');
+        if (pageTitleEl) {
+          pageTitleEl.innerText = `${STORE_CONFIG.storeName} - Commande en ligne`;
+        }
+      }
 
       if (data.store_slogan) {
         STORE_CONFIG.storeSlogan = data.store_slogan;
