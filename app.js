@@ -1515,76 +1515,72 @@ async function markWhatsappClicked(orderId) {
 }
 
 async function loadStoreSettings() {
-  try {
-    const { data, error } = await supabaseClient
-      .from(DB_CONFIG.settingsTable)
-      .select('whatsapp_number, store_name, store_slogan, store_hours_text, business_mode, manual_open, allowed_days')
-      .eq('id', 1)
-      .single();
+  try {
+    const { data, error } = await supabaseClient
+      .from(DB_CONFIG.settingsTable)
+      .select('whatsapp_number, store_name, store_slogan, store_hours_text, business_mode, manual_open, allowed_days')
+      .eq('id', 1)
+      .single();
 
-    if (data) {
-      if (data.whatsapp_number) {
-        STORE_CONFIG.whatsappNumber = data.whatsapp_number;
-        const inputEl = document.getElementById('setting-whatsapp-input');
-        if (inputEl) inputEl.value = STORE_CONFIG.whatsappNumber;
-      }
+    if (data) {
+      if (data.whatsapp_number) {
+        STORE_CONFIG.whatsappNumber = data.whatsapp_number;
+        const inputEl = document.getElementById('setting-whatsapp-input');
+        if (inputEl) inputEl.value = STORE_CONFIG.whatsappNumber;
+      }
 
-      if (data.store_name) {
-        STORE_CONFIG.storeName = data.store_name;
-        const nameInput = document.getElementById('setting-store-name-input');
-        if (nameInput) nameInput.value = STORE_CONFIG.storeName;
-        const titleEl = document.getElementById('store-title-text');
-        if (titleEl) titleEl.innerText = STORE_CONFIG.storeName;
+      if (data.store_name) {
+        STORE_CONFIG.storeName = data.store_name;
+        const nameInput = document.getElementById('setting-store-name-input');
+        if (nameInput) nameInput.value = STORE_CONFIG.storeName;
+        const titleEl = document.getElementById('store-title-text');
+        if (titleEl) titleEl.innerText = STORE_CONFIG.storeName;
+      }
 
-        // 🌟 【新增這裡】自動動態更新瀏覽器分頁的 Title
-        const pageTitleEl = document.getElementById('page-title');
-        if (pageTitleEl) {
-          pageTitleEl.innerText = `${STORE_CONFIG.storeName} - Commande en ligne`;
-        }
-      }
+      if (data.store_slogan) {
+        STORE_CONFIG.storeSlogan = data.store_slogan;
+        const sloganInput = document.getElementById('setting-store-slogan-input');
+        if (sloganInput) sloganInput.value = STORE_CONFIG.storeSlogan;
+        const sloganEl = document.getElementById('store-slogan-text');
+        if (sloganEl) sloganEl.innerText = STORE_CONFIG.storeSlogan;
+      }
 
-      if (data.store_slogan) {
-        STORE_CONFIG.storeSlogan = data.store_slogan;
-        const sloganInput = document.getElementById('setting-store-slogan-input');
-        if (sloganInput) sloganInput.value = STORE_CONFIG.storeSlogan;
-        const sloganEl = document.getElementById('store-slogan-text');
-        if (sloganEl) sloganEl.innerText = STORE_CONFIG.storeSlogan;
-      }
+      if (data.store_hours_text) {
+        STORE_CONFIG.storeHoursText = data.store_hours_text;
+        const hoursInput = document.getElementById('setting-hours-text-input');
+        if (hoursInput) hoursInput.value = STORE_CONFIG.storeHoursText;
+        const hoursEl = document.getElementById('store-hours-text');
+        if (hoursEl) hoursEl.innerText = STORE_CONFIG.storeHoursText;
+      }
 
-      if (data.store_hours_text) {
-        STORE_CONFIG.storeHoursText = data.store_hours_text;
-        const hoursInput = document.getElementById('setting-hours-text-input');
-        if (hoursInput) hoursInput.value = STORE_CONFIG.storeHoursText;
-        const hoursEl = document.getElementById('store-hours-text');
-        if (hoursEl) hoursEl.innerText = STORE_CONFIG.storeHoursText;
-      }
+      if (data.business_mode) {
+        STORE_CONFIG.businessMode = data.business_mode;
+        const modeSelect = document.getElementById('setting-business-mode-select');
+        if (modeSelect) modeSelect.value = STORE_CONFIG.businessMode;
+      }
 
-      if (data.business_mode) {
-        STORE_CONFIG.businessMode = data.business_mode;
-        const modeSelect = document.getElementById('setting-business-mode-select');
-        if (modeSelect) modeSelect.value = STORE_CONFIG.businessMode;
-      }
+      if (typeof data.manual_open === 'boolean') {
+        STORE_CONFIG.manualOpen = data.manual_open;
+        const manualSelect = document.getElementById('setting-manual-open-select');
+        if (manualSelect) manualSelect.value = STORE_CONFIG.manualOpen ? "true" : "false";
+      }
 
-      if (typeof data.manual_open === 'boolean') {
-        STORE_CONFIG.manualOpen = data.manual_open;
-        const manualSelect = document.getElementById('setting-manual-open-select');
-        if (manualSelect) manualSelect.value = STORE_CONFIG.manualOpen ? "true" : "false";
-      }
+      if (Array.isArray(data.allowed_days)) {
+        STORE_CONFIG.allowedDays = data.allowed_days;
+        document.querySelectorAll('.day-checkbox').forEach(chk => {
+          chk.checked = STORE_CONFIG.allowedDays.includes(parseInt(chk.value, 10));
+        });
+      }
 
-      if (Array.isArray(data.allowed_days)) {
-        STORE_CONFIG.allowedDays = data.allowed_days;
-        document.querySelectorAll('.day-checkbox').forEach(chk => {
-          chk.checked = STORE_CONFIG.allowedDays.includes(parseInt(chk.value, 10));
-        });
-      }
-
-      toggleManualOpenOption();
-      updateBusinessStatusBar();
-    }
-  } catch (err) {
-    console.error("載入設定失敗:", err);
-  }
+      toggleManualOpenOption();
+      updateBusinessStatusBar();
+    }
+  } catch (err) {
+    console.error("載入設定失敗:", err);
+  }
 }
+
+
 
 async function saveWhatsAppNumber() {
   const inputEl = document.getElementById('setting-whatsapp-input');
