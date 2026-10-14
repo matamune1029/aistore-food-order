@@ -6,7 +6,7 @@ let STORE_CONFIG = {
   whatsappNumber: "85292773583", 
   storeName: "AiStore",
   storeSlogan: " Livraison | Emporter",
-  storeHoursText: "🕒 13:00 - 10:00 (Lundi - Dimanche)",
+  storeHoursText: "🕒 13:00 - 10:00",
   businessMode: "auto",
   manualOpen: true,
   allowedDays: [1, 4] // 預設週一(1)與週四(4)
