@@ -468,13 +468,13 @@ function closeCheckoutModal() {
 
 function saveOrderToLocal(order) {
   try {
-    let history = JSON.parse(localStorage.getItem('cici_order_history') || '[]');
+    let history = JSON.parse(localStorage.getItem('${CONFIG.STORE_PREFIX}_order_history') || '[]');
     history.unshift({
       ...order,
       createdAt: new Date().toLocaleString()
     });
     if (history.length > 20) history = history.slice(0, 20);
-    localStorage.setItem('cici_order_history', JSON.stringify(history));
+    localStorage.setItem('${CONFIG.STORE_PREFIX}_order_history', JSON.stringify(history));
   } catch (e) {
     console.error('Save local order error:', e);
   }
@@ -728,7 +728,7 @@ function openHistoryModal() {
 
   let history = [];
   try {
-    history = JSON.parse(localStorage.getItem('cici_order_history') || '[]');
+    history = JSON.parse(localStorage.getItem('${CONFIG.STORE_PREFIX}_order_history') || '[]');
   } catch (e) {
     history = [];
   }
