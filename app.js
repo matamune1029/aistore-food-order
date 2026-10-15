@@ -959,7 +959,6 @@ function filterOrderTab(tabKey) {
 }
 
 async function updateOrderStatus(orderId, newStatus) {
-  if (!(await checkAdminAuthOrAlert())) return;
   const { error } = await supabaseClient
     .from(DB_CONFIG.ordersTable)
     .update({ status: newStatus })
@@ -1277,7 +1276,6 @@ function closeDishModal() {
 }
 
 async function saveDish() {
-  if (!(await checkAdminAuthOrAlert())) return;
   const id = document.getElementById('dish-id').value;
   const name_fr = document.getElementById('dish-name-fr').value.trim();
   const name_zh = document.getElementById('dish-name-zh').value.trim();
@@ -1346,7 +1344,6 @@ async function saveDish() {
 }
 
 async function deleteDish(event, id) {
-  if (!(await checkAdminAuthOrAlert())) return;
   const dishToDelete = menuData.find(m => m.id === id);
   const nameZh = dishToDelete ? (dishToDelete.name_zh || '') : '';
   if (event) event.stopPropagation();
@@ -1853,14 +1850,4 @@ async function adminLogout() {
   document.getElementById('customer-view').classList.remove('hidden');
   
   alert("✅ 已成功登出！");
-}
-
-async function checkAdminAuthOrAlert() {
-  const { data: { user }, error } = await supabaseClient.auth.getUser();
-  if (error || !user) {
-    alert("❌ 您的管理員權限已失效（帳號可能已被刪除或封鎖），請重新登入！");
-    window.location.reload(); // 重新整理強制重回登入
-    return false;
-  }
-  return true;
 }
